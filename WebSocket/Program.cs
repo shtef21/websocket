@@ -21,18 +21,16 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.UseWebSockets();
-
 app.Use(async (context, next) =>
 {
     if (context.WebSockets.IsWebSocketRequest)
     {
-        // From here we will handle the web socket request
-        using var webSocket = await context.WebSockets.AcceptWebSocketAsync();
-
-        await WebSocket.Core.WebSocketHandler.HandleWebSocket(context, webSocket);
+        // Here we will handle the web socket request
+        await WebSocket.Core.WebSocketHandler.HandleWebSocket(context);
     }
     else
     {
+        // Handle other requests normally
         await next(context);
     }
 });

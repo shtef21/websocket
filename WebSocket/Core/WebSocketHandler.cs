@@ -6,8 +6,13 @@ namespace WebSocket.Core
     public class WebSocketHandler
     {
 
-        public static async Task HandleWebSocket(HttpContext context, System.Net.WebSockets.WebSocket socket)
+        public static async Task HandleWebSocket(HttpContext context)
         {
+            // From here we will handle the web socket request
+            using var socket = await context.WebSockets.AcceptWebSocketAsync();
+
+            Console.WriteLine(" -> A new client connected!");
+            
             // 1. Extract useful information from HttpContext
             string requestRoute = context.Request.Path.ToString();
             string username = context.Request.Query["username"];
@@ -36,9 +41,8 @@ namespace WebSocket.Core
                     webSocketPayload.AddRange(new ArraySegment<byte>(tempMessage, 0, webSocketResponse.Count));
                 }
                 while (webSocketResponse.EndOfMessage == false);
-
+                
                 // Process the message
-
                 if (webSocketResponse.MessageType == WebSocketMessageType.Text)
                 {
                     // 3. Convert textual message from bytes to string
@@ -51,12 +55,16 @@ namespace WebSocket.Core
                     // 4. Close the connection
                     connectionAlive = false;
                 }
-
             }
+
+            Console.WriteLine(" -> A client disconnected.");
         }
 
-        public static async Task HandleWebSocket2 (HttpContext context, System.Net.WebSockets.WebSocket socket)
+        public static async Task HandleWebSocket2 (HttpContext context)
         {
+            // From here we will handle the web socket request
+            using var socket = await context.WebSockets.AcceptWebSocketAsync();
+
             // Extract useful information from HttpContext
             string requestRoute = context.Request.Path.ToString();
 

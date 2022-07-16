@@ -1,8 +1,47 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    Layout = null;
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div>
+    <button onclick="connect()">Connect</button>
 </div>
+<div>
+    <input id="wsMessage" type="text"
+        placeholder="Write your message..." />
+    <button onclick="sendMessage()">Send</button>
+</div>
+
+<h3>Logs:</h3>
+<div id="logsContainer"></div>
+
+<script>
+    var socket = null;
+
+    function connect() {
+        
+        var url = 'wss://' + location.host;
+        socket = new WebSocket(url);
+
+        socket.addEventListener('open', function(event) {
+            addLog('Connected to ' + url);
+        });
+
+        socket.addEventListener('message', function(event) {
+            addLog('Message from server: ' + event.data);
+        });
+    }
+
+    function sendMessage() {
+
+        var message = wsMessage.value;
+        socket.send(message);
+        addLog('Message sent!');
+    }
+
+    function addLog(log) {
+
+        var logParagraph = document.createElement('p');
+        logParagraph.innerText = log;
+        logsContainer.appendChild(logParagraph);
+    }
+</script>
